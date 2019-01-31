@@ -1,0 +1,11 @@
+[
+    '{{repeat(5, 7)}}',
+    {
+      id: '{{objectId()}}',
+      nazev: "{{company()}}", 
+      cislo_ev: "{{integer(100000, 99999)}}",
+      cislo_vyr: "{{integer(10000, 99999)}}"
+      
+  
+    }
+  ]

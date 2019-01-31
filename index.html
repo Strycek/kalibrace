@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.12/handlebars.min.js"></script>
+        <script src="script.js"></script> 
+        
+        <script id="list" type="text/x-handlebars-template">
+            <table border=1>
+                    <tr>
+                        <th>název zařízení</th>
+                        <th>evidenční číslo</th>
+                        <th>výrobní číslo</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    {{#each .}}
+                    <tr onclick="showDetail('{{id}}')">
+                        <td>{{nazev}}</td>
+                        <td>{{cislo_ev}}</td>
+                        <td>{{cislo_vyr}}</td>                    
+                        <td><button onclick="alert('{{id}}')">Edit</button></td> 
+                        <td><button onclick="alert('{{id}}')">Delete</button></td> 
+                    </tr>
+                    {{/each}}
+                    
+            </table>
+          </script>
+
+          <script id="detail" type="text/x-handlebars-template">
+            <h1>detail zařízení</h1>
+            <ul>
+                <li>{{nazev}}</li>
+                <li>{{cislo_ev}}</li>
+                <li>v{{cislo_vyr}}</li>
+            </ul>   
+          </script>
+
+
+     
+    </head>
+
+<body>
+    <h1>Kalibrace</h1>
+    <div id="app"></div>
+    <div id="app-detail"></div>
+</body>
+
+
+</html>
