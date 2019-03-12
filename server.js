@@ -45,11 +45,11 @@ const server = http.createServer((request, response) => {
 
             parsedUrl = request.url.split('/')
             if (parsedUrl[1] == 'kalibrace') { // ma id
-                json = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+                json = JSON.parse(fs.readFileSync('data.json', 'utf8')); // Nacita data s data.json
 
                 if (parsedUrl[2]) {
-                    id = request.url.split('/')[2]; // /kalibrace/5c535a3b74a735a4dd4f3d90      
-                    selected = json.filter(item => id === item.id)/*lambda funkce (item => id === item.id) */
+                    let id = request.url.split('/')[2]; // /kalibrace/5c535a3b74a735a4dd4f3d90 
+                    selected = json.filter(item => id === item.id) /*OOP-lambda funkce (item => id === item.id) */
                     response.writeHead(200, { 'Content-Type': 'application/json' }); // HTTP status kod
                     response.write(JSON.stringify(selected.length > 0 ? selected[0] : {}));
                     // map, reduce, forEach, filter
@@ -59,28 +59,29 @@ const server = http.createServer((request, response) => {
                     response.write(JSON.stringify(json));
                 }
             }
-            else { 
+            else {
                 response.writeHead(501);/*501 neni implementováno*/
-            }\
+            }
+            response.end();
             break;
         case 'DELETE':
             parsedUrl = request.url.split('/')
-            if (parsedUrl[1] == 'kalibrace') { // ma id
+            if (parsedUrl[1] == 'kalibrace') {
                 json = JSON.parse(fs.readFileSync('data.json', 'utf8'));
 
                 if (parsedUrl[2]) {
                     let id = request.url.split('/')[2]; // /kalibrace/5c535a3b74a735a4dd4f3d90 
-                    let index; 
+                    let index;
                     json.forEach((item, i) => {
                         if (item.id == id) {
                             index = i
                         }
                     });
                     if (index) {
-                        json.splice(index,1);
+                        json.splice(index, 1);
                     }
                     response.writeHead(204); // HTTP status kod
-                    fs.writeFileSync('data.json', JSON.stringify(json), 'utf8')                    
+                    fs.writeFileSync('data.json', JSON.stringify(json), 'utf8')
                 }
                 else { // nema id
                     response.writeHead(501);/*501 neni implementováno*/
@@ -89,13 +90,61 @@ const server = http.createServer((request, response) => {
             else {
                 response.writeHead(501);/*501 neni implementováno*/
             }
-
-        case 'PUT':
-        case 'POST': response.writeHead(501);/*501 neni implementováno*/
+            response.end();
             break;
-        default: response.writeHead(404);
+
+        case 'POST': // create
+            parsedUrl = request.url.split('/')
+            if (parsedUrl[1] == 'kalibrace') {
+                json = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+
+                let body = [];
+
+                request.on('data', (chunk) => {
+                    body.push(chunk);
+                }).on('end', () => {
+                    try {
+                        parsedBody = JSON.parse(body);
+                        parsedBody.id = Math.round(Math.random() * 1000000000).toString(34)
+
+                        json.push(parsedBody);
+                        fs.writeFileSync('data.json', JSON.stringify(json), 'utf8')
+
+                        response.writeHead(200, { 'Content-Type': 'application/json' });
+                        response.write(JSON.stringify(parsedBody));
+                    }
+                    catch(e){
+                        console.log(e);
+                        response.writeHead(400);
+                    }
+                    finally{response.end()}
+                  });
+            }
+
+            break;
+        case 'PUT': //update
+            parsedUrl = request.url.split('/');
+            if (parsedUrl[1] == 'kalibrace') {
+                json = JSON.parse(fs.readFileSync('data.json', 'utf8'));
+            }
+            if (parsedUrl[2]) {
+                let id = request.url.split('/')[2];
+
+
+                response.writeHead(200, { 'Content-Type': 'application/json' });
+            }
+
+        case 'PATCH'://update
+            //localhost:8080/kalibrace/5c535a3b2d31d27de231436d
+
+            response.writeHead(501);/*501 neni implementováno*/
+            response.end();
+            break;
+        default:
+            response.writeHead(404);
+            response.end();
     }
-    response.end();
+
 });
 console.log('Posloucham')
 server.listen(8080); /*podrží server neukončí se a čeká poslouchá*/
